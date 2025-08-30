@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 ディスカッション
+    url: https://github.com/hondouchi/todo_slackapp/discussions
+    about: 質問や提案はディスカッションで
+  - name: 📚 ドキュメント
+    url: https://github.com/hondouchi/todo_slackapp/tree/main/docs
+    about: プロジェクト設計ドキュメント
