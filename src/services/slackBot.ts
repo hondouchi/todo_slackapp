@@ -26,14 +26,21 @@ export class SlackBot {
    * Slackイベントハンドラーの設定
    */
   private setupEventHandlers(): void {
-    // アプリメンションの処理
-    this.app.message(/todobot/i, async ({ message, say }) => {
+    // アプリメンションの処理 - 正確なメンションとメッセージの両方に対応
+    this.app.event('app_mention', async ({ event, say }) => {
+      console.log('[DEBUG] App mention received:', event);
+      await this.handleTodoCommand(event, say);
+    });
+
+    // メッセージ内にボット名が含まれる場合も処理（後方互換性のため）
+    this.app.message(/todo-slack-app|todobot/i, async ({ message, say }) => {
+      console.log('[DEBUG] Message with bot name received:', message);
       await this.handleTodoCommand(message, say);
     });
 
     // アプリがワークスペースに追加された時の処理
     this.app.event('app_home_opened', async ({ say }) => {
-      await say(`こんにちは！TODOボットです。\n\`@todobot help\` でコマンドを確認できます。`);
+      await say(`こんにちは！TODOボットです。\n\`@todo-slack-app help\` でコマンドを確認できます。`);
     });
 
     // エラーハンドリング
