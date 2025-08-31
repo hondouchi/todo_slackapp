@@ -1,0 +1,48 @@
+{
+  "name": "todo_slackapp",
+  "version": "1.0.0",
+  "description": "Azure Container Apps + Cosmos DB を使用した、コスト効率重視の小規模チーム向け Slack Bot TODO アプリ",
+  "main": "dist/index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "test": "jest",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write src/**/*.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hondouchi/todo_slackapp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/hondouchi/todo_slackapp/issues"
+  },
+  "homepage": "https://github.com/hondouchi/todo_slackapp#readme",
+  "dependencies": {
+    "@azure/cosmos": "^4.5.0",
+    "@slack/bolt": "^4.4.0",
+    "dotenv": "^17.2.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.3.0",
+    "@typescript-eslint/eslint-plugin": "^8.41.0",
+    "@typescript-eslint/parser": "^8.41.0",
+    "eslint": "^9.34.0",
+    "jest": "^30.1.1",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.6.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}
