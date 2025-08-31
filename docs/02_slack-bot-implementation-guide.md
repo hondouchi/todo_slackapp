@@ -17,6 +17,17 @@ Slack Bolt フレームワークを使用したTODO管理ボットの基本機�
 - ✅ エラーハンドリング
 - ✅ ログ出力とデバッグ機能
 
+## 📝 Phase 2.5 準備事項
+
+Phase 2実装完了後、以下の手動設定が必要です：
+
+1. **Slack App作成**: [Slack API Website](https://api.slack.com/apps)でのアプリ作成
+2. **トークン取得**: Bot User OAuth Token と App-Level Token の取得
+3. **環境変数設定**: `.env`ファイルへのトークン設定
+4. **ワークスペースインストール**: 作成したアプリのワークスペースへのインストール
+
+詳細は `docs/02_5_slack-app-web-setup-guide.md` を参照してください。
+
 ## 🚀 実装手順
 
 ### 1. 設定管理システムの実装
@@ -70,6 +81,7 @@ export const getConfig = (): AppConfig => {
 ```
 
 **ポイント**:
+
 - 環境変数の型安全な読み込み
 - 必須パラメータのバリデーション
 - デフォルト値の設定
@@ -92,7 +104,10 @@ export class SlackBot {
     const appConfig: any = {
       token: this.config.slack.botToken,
       signingSecret: this.config.slack.signingSecret,
-      logLevel: this.config.environment === 'development' ? LogLevel.DEBUG : LogLevel.INFO,
+      logLevel:
+        this.config.environment === 'development'
+          ? LogLevel.DEBUG
+          : LogLevel.INFO,
     };
 
     // Socket Mode の設定（開発環境用）
@@ -112,21 +127,26 @@ export class SlackBot {
     // メンション検知
     this.app.event('app_mention', async ({ event, context, client, say }) => {
       try {
-        console.log(`📩 Mention received from ${event.user} in ${event.channel}`);
-        
+        console.log(
+          `📩 Mention received from ${event.user} in ${event.channel}`
+        );
+
         const text = event.text.toLowerCase();
-        
+
         // ユーザー情報取得
         const userInfo = await client.users.info({
           token: context.botToken,
           user: event.user,
         });
 
-        const userName = userInfo.user?.real_name || userInfo.user?.name || 'Unknown';
+        const userName =
+          userInfo.user?.real_name || userInfo.user?.name || 'Unknown';
 
         // 基本的な応答
         if (text.includes('hello') || text.includes('hi')) {
-          await say(`👋 こんにちは、${userName}さん！TODOの管理をお手伝いします。`);
+          await say(
+            `👋 こんにちは、${userName}さん！TODOの管理をお手伝いします。`
+          );
         } else if (text.includes('help')) {
           await this.sendHelpMessage(say);
         } else if (text.includes('add')) {
@@ -134,11 +154,15 @@ export class SlackBot {
         } else if (text.includes('list')) {
           await say(`📋 TODO一覧機能は準備中です... (Phase 3で実装予定)`);
         } else {
-          await say(`🤖 ${userName}さん、TODO管理Botです！\n\`help\` と言ってもらえれば使い方をご案内します。`);
+          await say(
+            `🤖 ${userName}さん、TODO管理Botです！\n\`help\` と言ってもらえれば使い方をご案内します。`
+          );
         }
       } catch (error) {
         console.error('Error handling mention:', error);
-        await say('❌ エラーが発生しました。しばらく時間をおいて再度お試しください。');
+        await say(
+          '❌ エラーが発生しました。しばらく時間をおいて再度お試しください。'
+        );
       }
     });
 
@@ -147,7 +171,9 @@ export class SlackBot {
       try {
         // @ts-ignore - Slack SDKの型定義の問題を回避
         if (message.channel_type === 'im') {
-          await say('👋 DMでのやりとりも対応しています！何かお手伝いできることはありますか？');
+          await say(
+            '👋 DMでのやりとりも対応しています！何かお手伝いできることはありますか？'
+          );
         }
       } catch (error) {
         console.error('Error handling DM:', error);
@@ -157,11 +183,11 @@ export class SlackBot {
     // スラッシュコマンド対応（将来的な拡張用）
     this.app.command('/todo', async ({ command, ack, respond }) => {
       await ack();
-      
+
       try {
         await respond({
           text: '🚧 スラッシュコマンド機能は開発中です...',
-          response_type: 'ephemeral'
+          response_type: 'ephemeral',
         });
       } catch (error) {
         console.error('Error handling slash command:', error);
@@ -169,7 +195,7 @@ export class SlackBot {
     });
 
     // エラーハンドリング
-    this.app.error(async (error) => {
+    this.app.error(async error => {
       console.error('❌ Slack App Error:', error);
     });
   }
@@ -193,7 +219,7 @@ export class SlackBot {
 
 📧 DMでの操作にも対応しています！
 `;
-    
+
     await say(helpText);
   }
 
@@ -240,6 +266,7 @@ export class SlackBot {
 ```
 
 **ポイント**:
+
 - Socket Mode（開発）とHTTP Mode（本番）の両対応
 - 型安全なイベントハンドリング
 - エラーハンドリングの実装
@@ -264,9 +291,9 @@ async function main(): Promise<void> {
   try {
     const slackBot = new SlackBot();
     await slackBot.start();
-    
+
     console.log('✅ Slack Bot TODO App started successfully!');
-    
+
     // Graceful shutdown handling
     process.on('SIGINT', async () => {
       console.log('\n🛑 Shutting down gracefully...');
@@ -285,11 +312,10 @@ async function main(): Promise<void> {
       console.error('❌ Unhandled Rejection at:', promise, 'reason:', reason);
     });
 
-    process.on('uncaughtException', (error) => {
+    process.on('uncaughtException', error => {
       console.error('❌ Uncaught Exception:', error);
       process.exit(1);
     });
-
   } catch (error) {
     console.error('❌ Failed to start Slack Bot TODO App:', error);
     process.exit(1);
@@ -297,13 +323,14 @@ async function main(): Promise<void> {
 }
 
 // Start the application
-main().catch((error) => {
+main().catch(error => {
   console.error('❌ Fatal error:', error);
   process.exit(1);
 });
 ```
 
 **ポイント**:
+
 - Graceful shutdown の実装
 - エラーハンドリングの充実
 - プロセス管理の最適化
@@ -360,24 +387,31 @@ COSMOS_DB_CONTAINER_NAME=todos
 ## ✅ 動作確認
 
 ### 1. ビルドテスト
+
 ```bash
 npm run build
 ```
+
 **期待結果**: TypeScript コンパイル成功、`dist/` にファイル生成
 
 ### 2. 起動テスト（トークン未設定）
+
 ```bash
 npm start
 ```
-**期待結果**: 
+
+**期待結果**:
+
 - ✅ アプリケーション起動
 - ✅ Slack SDK 初期化
 - ❌ `invalid_auth` エラー（**これは正常** - トークン未設定のため）
 
 ### 3. 開発モードテスト
+
 ```bash
 npm run dev
 ```
+
 **期待結果**: nodemon でファイル監視モード起動
 
 ## 🔧 TIPS & トラブルシューティング
@@ -393,14 +427,18 @@ npm run dev
 ### ⚠️ 注意点・トラブル対処
 
 #### 1. Slack SDK インポートエラー
+
 **問題**: `Cannot find module '@slack/bolt'`
+
 ```bash
 # 解決方法
 npm install @slack/bolt
 ```
 
 #### 2. 環境変数読み込みエラー
+
 **問題**: dotenv が読み込まれない
+
 ```typescript
 // 解決方法: config/app.ts の先頭で確実に読み込み
 import dotenv from 'dotenv';
@@ -408,20 +446,26 @@ dotenv.config();
 ```
 
 #### 3. TypeScript 型エラー
+
 **問題**: Slack SDK の型定義問題
+
 ```typescript
 // 一時的な回避方法
 // @ts-ignore
 ```
 
 #### 4. Socket Mode 接続エラー
+
 **問題**: `invalid_auth` エラー
+
 - **原因**: 実際のトークンが未設定
 - **解決**: Phase 2.5 でSlack App作成とトークン設定
 
 #### 5. メンション検知されない
+
 **問題**: app_mention イベントが発火しない
-- **確認点**: 
+
+- **確認点**:
   - Bot がチャンネルに追加されているか
   - Event Subscriptions が有効か
   - 適切なスコープが設定されているか
@@ -435,6 +479,7 @@ dotenv.config();
 ## 📋 実装チェックリスト
 
 ### 基本機能
+
 - [x] Slack Bolt SDK セットアップ
 - [x] 環境設定管理（app.ts）
 - [x] メインボットクラス（slackBot.ts）
@@ -442,6 +487,7 @@ dotenv.config();
 - [x] ヘルスチェック（health.ts）
 
 ### Slack 機能
+
 - [x] メンション検知
 - [x] 基本応答機能
 - [x] ヘルプメッセージ
@@ -449,12 +495,14 @@ dotenv.config();
 - [x] エラーハンドリング
 
 ### 開発機能
+
 - [x] TypeScript コンパイル
 - [x] ホットリロード（nodemon）
 - [x] デバッグログ出力
 - [x] 環境変数管理
 
 ### 運用機能
+
 - [x] Graceful shutdown
 - [x] プロセス管理
 - [x] ヘルスチェック
@@ -465,6 +513,7 @@ dotenv.config();
 Phase 2 完了後の進行順序：
 
 ### Phase 2.5: Slack App 作成・設定
+
 1. **Slack API 管理画面でアプリ作成**
 2. **Bot Token、Signing Secret、App Token 取得**
 3. **イベント購読設定**
@@ -472,6 +521,7 @@ Phase 2 完了後の進行順序：
 5. **ローカルテスト（ngrok使用）**
 
 ### Phase 3: Cosmos DB 接続実装
+
 1. **Azure Cosmos DB セットアップ**
 2. **データモデル定義**
 3. **CRUD操作実装**
@@ -480,6 +530,7 @@ Phase 2 完了後の進行順序：
 ## 📊 実装統計
 
 **追加されたファイル**:
+
 - `src/config/app.ts` - 設定管理
 - `src/services/slackBot.ts` - メインボット機能
 - `src/index.ts` - エントリーポイント更新

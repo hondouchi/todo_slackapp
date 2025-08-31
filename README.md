@@ -21,32 +21,39 @@ Slack ワークスペース内でメンション形式で TODO 管理ができ�
 - **認証**: Slack OAuth Bot Token
 - **CI/CD**: GitHub Actions
 
-## 🚀 クイックスタート
+## 🚀 開発フェーズ状況
 
-### 前提条件
+### ✅ Phase 1: プロジェクト環境構築（完了）
 
-- Node.js 18+
-- Docker
-- Azure アカウント (無料枠)
-- Slack ワークスペース管理者権限
+- Node.js/TypeScript 環境構築
+- ESLint/Prettier 設定
+- Jest テスト環境
+- Docker 設定
+- GitHub Project 管理設定
 
-### ローカル開発
+### ✅ Phase 2: Slack Bot 基本実装（完了）
 
-```bash
-# リポジトリクローン
-git clone https://github.com/hondouchi/todo_slackapp.git
-cd todo_slackapp
+- Slack Bolt SDK 統合
+- 基本的なメッセージハンドリング
+- 環境設定管理システム
+- Socket Mode 対応
+- エラーハンドリング実装
 
-# 依存関係インストール
-npm install
+### 🔄 Phase 2.5: Slack App 設定（現在の作業）
 
-# 環境変数設定
-cp .env.example .env
-# .env ファイルを編集
+- **次の手順**: [Slack API Website](https://api.slack.com/apps) でSlackアプリを手動作成
+- Bot User OAuth Token の取得
+- App-Level Token 設定
+- Event Subscriptions 設定
+- ワークスペースへのインストール
 
-# 開発サーバー起動
-npm run dev
-```
+詳細: [`docs/02_5_slack-app-web-setup-guide.md`](docs/02_5_slack-app-web-setup-guide.md)
+
+### ⏳ Phase 3: Cosmos DB 統合（予定）
+
+- Azure Cosmos DB 接続
+- TODO CRUD 操作実装
+- データモデル設計
 
 ### デプロイ
 
